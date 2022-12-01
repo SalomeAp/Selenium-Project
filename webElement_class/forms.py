@@ -55,21 +55,40 @@ try:
     driver.switch_to.windows_handles(handles[1])
     print("current url", driver.current_url)
     driver.switch_to.window(handles[0])
-    #enter FirstName, enter LastName, enter Email = 'jdoe@email.com'
-    #select Gender=Male
-    #mobileNumber= 9876543210
-    #enter date_of_birth = 27 nov 2000
-    #enter subjects = "selenium form testing'
-    #select checkboxes, select Sports, reading
-    #select (optional) upload picture
-    #enter message in text area = "2906 Shell road, 12224"
-    #check is city list is enabled
-    #select state =NCR
-    #select city = Delhi
-    #check if Male gender is selected
-    #check if sports hobbies are selected
-    #click submit
-    #verify the message:= "Thanks for submitting the form"
+
+    # All locators
+    # enter FirstName, enter LastName, enter Email = 'jdoe@email.com'
+    fn_input = 'firstName'
+    ln_input = 'lastName'
+    Email_input = 'userEmail'
+    # select Gender=Male
+    gender_male = 'gender-radio-1'
+
+    # mobileNumber= 9876543210
+    mobile_number_input = 'userNumber'
+    # enter date_of_birth = 27 nov 2000
+    # optional
+    # enter subjects = "selenium form testing'
+    # select checkboxes, select Sports, reading
+    hobbies_sp = "hobbies-checkbox-1"
+    hobbies_reading = "hobbies-checkbox-2"
+    # select (optional) upload picture
+    # enter message in text area = "2906 Shell road, 12224"
+    address_textarea = "currentAddress"
+    # check is city list is enabled
+    upload_pic_input = 'uploadPicture'
+    city_list = "react_select_3_input"
+    # select state =NCR
+    state_list = "react_select_4_input"
+    submit_button = 'submit'
+    confirmation_msg = 'example-modal-sizes-title-lg'
+    # select city = Delhi
+    date_of_birth = "dateOfBirthInput"
+    # check if Male gender is selected
+    # check if sports hobbies are selected
+    # click submit
+    # verify the message:= "Thanks for submitting the form"
+    close_cm_button = "closeLargeModal"
 
 
 
