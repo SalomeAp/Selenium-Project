@@ -1,105 +1,134 @@
-import exceptiongroup
-from Tools.scripts.fixcid import err
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import *
-
 import time
 
 HOST = "https://demoqa.com/automation-practice-form"
+
+# created the object for chromedriver that talks to Chrome Browser
+chr_options = Options()
+chr_options.add_experimental_option("detach", True)
+# chr_options.add_experimental_option('excludeSwitches',["disable-popup-blocking"])
+driver = webdriver.Chrome(options=chr_options)
+print('maximizing the browser window')
+driver.maximize_window()
+# This sets a sticky timeout to implicitly wait for an element to be found, or a command to complete.
+driver.implicitly_wait(20)
+time.sleep(0)
+
+
+def disable_google_ads(iframe_xpath):
+    all_iframes = driver.find_elements(By.XPATH, iframe_xpath)
+    if len(all_iframes) > 0:
+        print("Ad Found\n")
+        driver.execute_script("""
+            var elems = document.getElementsByTagName("iframe"); 
+            for(var i = 0, max = elems.length; i < max; i++)
+                 {
+                     elems[i].hidden=true;
+                 }
+                              """)
+        print('Total Ads: ' + str(len(all_iframes)))
+    else:
+        print('No frames found')
+
+
 try:
-    # created the object for chromedriver that talks to Chrome Browser
-    chr_options = Options()
-    chr_options.add_experimental_option("detach", True)
-    driver = webdriver.Chrome(options=chr_options)
-    print('maximizing the browser window')
-    driver.maximize_window()
-    driver.implicitly_wait(20)
+    # Input DATA:
+    first_name = 'john'
+    last_name = 'doe'
+    email = 'jdoe@email.com'
 
-    print("Starting test with various locator to use in find_element() method.")
-    driver.get(HOST)
-    time.sleep(5)
-
-    # webdriver Properties
-    print("This is my current URL", driver.current_url)
-    print("driver.name:", driver.name)
-    print("driver.title: ", driver.title)
-    print("driver.current_windows_handle:", driver.current_window_handle)
-    print("driver.window_handles:", driver.window_handles)
-    time.sleep(5)
-    print("# WebDriver Methods:--------------")
-    next_page = "https://www.google.com/"
-    driver.get(next_page)
-    driver.back()
-    print("we are here now: (qa tools)", driver.current_url)
-    driver.forward()
-    print("we are here now(google):", driver.current_url)
-    driver.refresh()
-    print("we are here to refresh:(google)", driver.current_url)
-    print("#switching between browser windows or tabs")
-    # we are on /browser-windows page, get current window handle
-    driver.get(HOST)
-    first_window_handle = driver.current_window_handle
-    print("Id of the first page opened", first_window_handle)
-    # click on new tab button
-    driver.find_element(By.ID, "tabButton").click()
-    # now we have two tabs,switch to the second, get window handles(list),
-    handles = driver.window_handles
-    print("Ids of all tabs/windows open", handles)
-    print("current browser windows id", driver.current_window_handle)
-    # tabs are in order handles=[idoffirsttab,idofsecondtab]
-    # switch to the second , switch to handles
-    print("switching to the new window or tab")
-    driver.switch_to.windows_handles(handles[1])
-    print("current url", driver.current_url)
-    driver.switch_to.window(handles[0])
-
-    # All locators
-    # enter FirstName, enter LastName, enter Email = 'jdoe@email.com'
+    # All Locators (all values are ID locators):
     fn_input = 'firstName'
     ln_input = 'lastName'
-    Email_input = 'userEmail'
-    # select Gender=Male
-    gender_male = 'gender-radio-1'
-
-    # mobileNumber= 9876543210
+    email_input = 'userEmail'
+    gender_male_xpath = '//input[@id="gender-radio-1"]/..'
     mobile_number_input = 'userNumber'
-    # enter date_of_birth = 27 nov 2000
-    # optional
-    # enter subjects = "selenium form testing'
-    # select checkboxes, select Sports, reading
-    hobbies_sp = "hobbies-checkbox-1"
-    hobbies_reading = "hobbies-checkbox-2"
-    # select (optional) upload picture
-    # enter message in text area = "2906 Shell road, 12224"
-    address_textarea = "currentAddress"
-    # check is city list is enabled
+    date_of_birth_input = 'dateOfBirthInput'
+    hobbies_sp_xpath = '//input[@id="hobbies-checkbox-1"]/..'
+    hobbies_reading_xpath = '//input[@id="hobbies-checkbox-2"]/..'
     upload_pic_input = 'uploadPicture'
-    city_list = "react_select_3_input"
-    # select state =NCR
-    state_list = "react_select_4_input"
+    address_textarea = 'currentAddress'
+    state_list = 'state'
+    state_input = 'react-select-3-input'
+    city_list = 'city'
+    city_input = 'react-select-4-input'
     submit_button = 'submit'
     confirmation_msg = 'example-modal-sizes-title-lg'
-    # select city = Delhi
-    date_of_birth = "dateOfBirthInput"
+    close_cm_button = 'closeLargeModal'
+    google_ads_iframe_xpath = "//iframe[contains(@id, 'google_ads_iframe_')]"
+
+    # Steps:
+    driver.get(HOST)
+    # let all ads load
+    time.sleep(5)
+    # after loading all ads this step will go through all of them and disable
+    disable_google_ads(google_ads_iframe_xpath)
+
+    print("Starting test with various properties and methods for WebElement class.")
+    # driver.execute_script("document.body.style.zoom='0.9'")
+
+    # enter first name , last name and email
+    driver.find_element(By.ID, fn_input).send_keys(first_name)
+    driver.find_element(By.ID, ln_input).send_keys(last_name)
+    driver.find_element(By.ID, email_input).send_keys(email)
+    # mobile_number = 9876543210
+    driver.find_element(By.ID, mobile_number_input).send_keys('9876543210')
+    # select radio button Gender=Male
+    driver.find_element(By.XPATH, gender_male_xpath).click()
+    # (optional) enter date_of_birth = '27 Nov 2000'
+    # (optional) enter subjects = 'selenium forms testing'
+    # select checkboxes, select Sports, Reading
+    driver.find_element(By.XPATH, hobbies_sp_xpath).click()
+    driver.find_element(By.XPATH, hobbies_reading_xpath).click()
+    # (optional) upload picture
+    # enter message in text_area = '2906 Shell Road, 12224'
+    driver.find_element(By.ID, address_textarea).send_keys('2906 Shell Road, 12224')
+    # check is City list is enabled.
+    print('is City list is enabled before selecting state?', driver.find_element(By.ID, city_list).is_selected())
+    # select state=NCR
+    print('is State list is enabled before selecting state?', driver.find_element(By.ID, state_list).is_selected())
+    driver.find_element(By.ID, state_input).send_keys('NCR' + Keys.TAB)
+    print("state is entered.")
+    # check is City list is enabled.
+    time.sleep(2)
+    print('is City list enabled after selecting state?', driver.find_element(By.ID, city_list).is_enabled())
+    # select city=Delhi
+    driver.find_element(By.ID, city_input).send_keys('Delhi' + Keys.TAB)
+    print('city is entered.')
     # check if Male gender is selected
-    # check if sports hobbies are selected
+    print('is Male gender radio button selected?', driver.find_element(By.XPATH, gender_male_xpath).is_enabled())
+    # check if Sports Hobbies is selected
+    print('is Sports selected from Hobbies?', driver.find_element(By.XPATH, hobbies_sp_xpath).is_selected())
     # click submit
-    # verify the message:= "Thanks for submitting the form"
-    close_cm_button = "closeLargeModal"
+    submit_button = driver.find_element(By.ID, submit_button)
+    # below step is optional, it is to scroll to the element, but we dont have scroll bar on the website, it wont work
+    # but this is good case to show that we can execute javascript with Selenium commands
+    driver.execute_script("arguments[0].scrollIntoView();", submit_button)
+    submit_button.click()
+    time.sleep(5)
+    print("all information was entered and submitted...")
 
-
+    # verify the message='Thanks for submitting the form'
+    print("Is Confirmation message displayed?", driver.find_element(By.ID, confirmation_msg).is_displayed())
+    # close the confirmation window
+    close_btn = driver.find_element(By.ID, close_cm_button)
+    close_btn.click()
+    time.sleep(2)
+    print("Test Successfully executed.")
 
 except Exception as err:
-
+    time.sleep(10)
+    print("Python Exception: test failed with following exception.")
     print(err)
-    print("Python: Test failed with above exception")
-except NoSuchElementException as err:
+except (NoSuchElementException, TimeoutException) as err:
+    time.sleep(10)
+    print("Selenium Exception: test failed with following exception.")
     print(err)
-    print("Selenium: Test failed with above exception")
 finally:
-    # close all the tabs
+    # close all tabs:
     driver.quit()
-    # pass
+    print("TEST Completed!!")
